@@ -112,8 +112,25 @@ jobs:
             with:
                 username: ${{secrets.DOCKER_USERNAME}}
                 password: ${{secrets.DOCKER_PASSWORD}}
+          - name: docker build fir testing
+            uses: docker/build-push-action@v6.19.2
+            with:
+              context: .
+              push: false
+              tags: ${{secrets.DOCKER_USERNAME}}/solar-system-${{github.sha}}
+
+          - name: docker image test
+            run: |
+                docker images
+                docker run --name solar-system-app -d \
+                -p 3000:3000 \
+                -e MONGO_URI=${{env.MONGO_URI}} \
+                -e MONGO_USERNAME=${{env.MONGO_USERNAME}} \
+                -e MONGO_PASSWORD=${{env.MONGO_PASSWORD}} \
+                ${{secrets.DOCKER_USERNAME}}/solar-system-${{github.sha}}
                 
               
+
 
 
 
